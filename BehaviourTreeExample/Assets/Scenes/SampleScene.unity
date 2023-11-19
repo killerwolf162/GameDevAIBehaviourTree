@@ -353,6 +353,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c57f348e42646b4091d49d27b0a283d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 3
+  keepDistance: 1
+  wayPoints:
+  - {fileID: 263365720}
+  - {fileID: 233287682}
+  - {fileID: 1817478150}
+  - {fileID: 400465772}
 --- !u!195 &539429223
 NavMeshAgent:
   m_ObjectHideFlags: 0
