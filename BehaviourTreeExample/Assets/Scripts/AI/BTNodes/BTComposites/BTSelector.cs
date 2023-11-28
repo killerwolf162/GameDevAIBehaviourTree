@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class BTSelector : BTComposite
 {
+    public BTSelector(params BTBaseNode[] children) : base(children) { }
+
     protected override TaskStatus OnUpdate()
     {
         for (var i = 0; i < children.Length; i++)
