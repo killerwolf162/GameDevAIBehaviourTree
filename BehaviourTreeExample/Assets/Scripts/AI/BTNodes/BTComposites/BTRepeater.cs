@@ -1,4 +1,7 @@
-﻿public class BTRepeater : BTDecorator
+///
+/// The Repeater node runs its child a number of times before returning success
+///
+public class BTRepeater : BTDecorator
 {
     private int amount = 0;
     private int currentLoop = 0;
