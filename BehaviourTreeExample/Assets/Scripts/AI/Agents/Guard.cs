@@ -42,12 +42,9 @@ public class Guard : MonoBehaviour
     private void FixedUpdate()
     {
         TaskStatus result = tree.Tick();
-        //if(result != TaskStatus.Running)
-        //{
-        //    enabled = false;
-        //}
     }
 
+    // Uncomment if you want to see a field of view cone in with gizmos
     //private void OnDrawGizmos()
     //{
     //    Gizmos.color = Color.yellow;
