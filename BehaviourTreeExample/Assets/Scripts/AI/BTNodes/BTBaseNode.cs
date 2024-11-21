@@ -5,15 +5,11 @@ using UnityEngine;
 public enum TaskStatus { Success, Failed, Running }
 public abstract class BTBaseNode
 {
-
+    //Members
+    protected Blackboard blackboard;
     private bool wasEntered = false;
 
-    protected Blackboard blackboard;
-
-    protected abstract TaskStatus OnUpdate();
-
-    protected virtual void OnEnter() { }
-    protected virtual void OnExit() { }
+    //Public Methods
     public virtual void OnReset() { }
 
     public TaskStatus Tick()
@@ -37,6 +33,11 @@ public abstract class BTBaseNode
     {
         this.blackboard = blackboard;
     }
+
+    //Protected Methods
+    protected abstract TaskStatus OnUpdate();
+    protected virtual void OnEnter() { }
+    protected virtual void OnExit() { }
 }
 
 public abstract class BTComposite : BTBaseNode

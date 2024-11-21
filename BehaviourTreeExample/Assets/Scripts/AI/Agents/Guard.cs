@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
-using UnityEditor.Experimental.GraphView;
+
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -102,10 +101,6 @@ public class Guard : MonoBehaviour
     private void FixedUpdate()
     {
         TaskStatus result = tree.Tick();
-        //if(result != TaskStatus.Running)
-        //{
-        //    enabled = false;
-        //}
     }
 
     private void OnDrawGizmos()

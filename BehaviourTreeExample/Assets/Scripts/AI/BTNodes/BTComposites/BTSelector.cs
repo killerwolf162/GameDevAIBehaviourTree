@@ -2,6 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+///
+/// The Selector tries to find a child which return success, if one succeeds it return success, if a child fails it tries the next child, if all children return failed, it returns failed
+///
 public class BTSelector : BTComposite
 {
     public BTSelector(params BTBaseNode[] children) : base(children) { }
