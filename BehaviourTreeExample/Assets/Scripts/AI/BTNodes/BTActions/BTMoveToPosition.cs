@@ -44,29 +44,3 @@ public class BTMoveToPosition : BTBaseNode
 
     }
 }
-
-public class BTGetNextPatrolPosition : BTBaseNode
-{
-    private Transform[] wayPoints;
-    public BTGetNextPatrolPosition(Transform[] wayPoints) 
-    {
-        this.wayPoints = wayPoints;
-    }
-
-    protected override void OnEnter()
-    {
-        int currentIndex = blackboard.GetVariable<int>(VariableNames.CURRENT_PATROL_INDEX);
-        currentIndex++;
-        if(currentIndex >= wayPoints.Length)
-        {
-            currentIndex = 0;
-        }
-        blackboard.SetVariable<int>(VariableNames.CURRENT_PATROL_INDEX, currentIndex);
-        blackboard.SetVariable<Vector3>(VariableNames.TARGET_POSITION, wayPoints[currentIndex].position);
-    }
-
-    protected override TaskStatus OnUpdate()
-    {
-        return TaskStatus.Success;
-    }
-}
