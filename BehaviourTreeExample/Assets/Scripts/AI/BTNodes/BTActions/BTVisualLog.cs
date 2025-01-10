@@ -12,7 +12,7 @@ public class BTVisualLog : BTBaseNode
     }
     protected override void OnEnter()
     {
-        blackboard.SetVariable<string>(logMessage, VariableNames.DEBUG_MESSAGE);
+        blackboard.SetVariable<string>(logMessage, "no message");
     }
     protected override TaskStatus OnUpdate()
     {

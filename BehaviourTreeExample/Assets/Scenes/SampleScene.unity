@@ -512,10 +512,10 @@ MonoBehaviour:
   moveSpeed: 3
   moveDistance: 0.1
   sightRange: 5
-  weaponSenseRange: 10
   attackDistance: 1
   rotationSpeed: 180
   senseRadius: 2
+  attackDamage: 2
   playerLayer:
     serializedVersion: 2
     m_Bits: 64
@@ -1239,7 +1239,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 1
+  m_IsTrigger: 0
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1289,7 +1289,7 @@ CapsuleCollider:
     serializedVersion: 2
     m_Bits: 0
   m_LayerOverridePriority: 0
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 2
@@ -1994,6 +1994,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 794f0ee09c67de7498fb2d6bcc43074d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  moveSpeed: 3
+  moveDistance: 0.5
+  rotationSpeed: 180
+  minDistanceToPlayer: 0.5
+  maxSmokeCooldown: 5
+  currSmokeCooldown: 0
+  smokeGrenade: {fileID: 6231771827166864985, guid: 2fe97864fee369e4c87fec0509e33868,
+    type: 3}
 --- !u!1 &1868206819
 GameObject:
   m_ObjectHideFlags: 0
