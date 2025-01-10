@@ -21,6 +21,7 @@ public class BTMoveToPosition : BTBaseNode
 
     protected override void OnEnter()
     {
+        Debug.Log("Started moveToLocation");
         agent.speed = moveSpeed;
         agent.stoppingDistance = keepDistance;
         targetPosition = blackboard.GetVariable<Vector3>(BBtargetPosition);
@@ -29,6 +30,7 @@ public class BTMoveToPosition : BTBaseNode
     protected override TaskStatus OnUpdate()
     {
         if (agent == null) { return TaskStatus.Failed; }
+        //if player in sight {return TaskStatus.Failed;}
         if (agent.pathPending) { return TaskStatus.Running; }
         if (agent.hasPath && agent.path.status == NavMeshPathStatus.PathInvalid) { return TaskStatus.Failed; }
         if (agent.pathEndPosition != targetPosition)
@@ -36,11 +38,16 @@ public class BTMoveToPosition : BTBaseNode
             agent.SetDestination(targetPosition);
         }
 
-        if(Vector3.Distance(agent.transform.position, targetPosition) <= keepDistance)
+        if (Vector3.Distance(agent.transform.position, targetPosition) <= keepDistance)
         {
             return TaskStatus.Success;
         }
-        return TaskStatus.Running;
-
+        Debug.Log("moveToLocation Running");
+        return TaskStatus.Running;      
+    }
+    protected override void OnExit()
+    {
+        Debug.Log("Exited moveToLocation");
     }
 }
+
