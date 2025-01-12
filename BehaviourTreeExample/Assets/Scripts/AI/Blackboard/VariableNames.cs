@@ -4,6 +4,8 @@ public static class VariableNames
 {
     public const string ENEMY_HEALTH = "ENEMY_HEALTH";
     public const string TARGET_POSITION = "TARGET_POSITION";
+    public const string TARGET_TRANSFORM = "TARGET_TRANSFORM";
+    public const string PLAYER_TRANSFORM = "PLAYER_TRANSFORM";
     public const string CURRENT_PATROL_INDEX = "CURRENT_PATROL_INDEX";
     public const string TARGET = "TARGET";
     public const string PLAYER = "PLAYER";

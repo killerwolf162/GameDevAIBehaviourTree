@@ -3,32 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AI;
+using TMPro;
 
 public class Guard : MonoBehaviour
 {
     [SerializeField] private float moveSpeed = 3;
     [SerializeField] private float moveDistance = 0.5f;
     [SerializeField] private float sightRange = 5;
+    [SerializeField] private float maxSightRange = 5;
+    [SerializeField] private float minSightRange = 0.5f;
     [SerializeField] private float attackDistance = 1f;
     [SerializeField] private float rotationSpeed = 180f;
-    [SerializeField] private float senseRadius = 10;
     [SerializeField] private int attackDamage = 1;
-    [SerializeField] private LayerMask playerLayer;
     [SerializeField] private GameObject weapon;
+    [SerializeField] private TextMeshProUGUI stateText;
     public Transform[] wayPoints;
     private BTBaseNode tree;
     private NavMeshAgent agent;
     private Animator animator;
-    private Transform playerTransform;
-    private Collider col;
 
     private void Awake()
     {
         agent = GetComponent<NavMeshAgent>();
         weapon = FindObjectsOfType<Weapon>().ToList().First().gameObject;
-        playerTransform = FindAnyObjectByType<Player>().transform;
         animator = GetComponentInChildren<Animator>();
-        col = GetComponent<Collider>();
     }
 
     private void Start()
@@ -37,7 +35,8 @@ public class Guard : MonoBehaviour
         Blackboard blackboard = new Blackboard();
         blackboard.SetVariable(VariableNames.ENEMY_HEALTH, 100);
         blackboard.SetVariable(VariableNames.CURRENT_PATROL_INDEX, -1);
-        blackboard.SetVariable(VariableNames.TARGET, GameObject.FindWithTag("Player"));
+        blackboard.SetVariable(VariableNames.PLAYER, GameObject.FindWithTag("Player"));
+        blackboard.SetVariable(VariableNames.TARGET, blackboard.GetVariable<GameObject>(VariableNames.PLAYER));
 
         #region OwnTree
         //BTBaseNode patrol = new BTSequence(
@@ -93,32 +92,28 @@ public class Guard : MonoBehaviour
         #endregion
 
         #region modified ValentijnTree
-        // find weapon to attack player
+        // Move to weapon storage to get weapon
         var FindWeaponTree =
             new BTSequence(
                 new BTCondition(() => { return blackboard.GetVariable<GameObject>(VariableNames.CURRENT_WEAPON) == null; }),
                 new BTGenericAction(() =>
                 {
                     if (weapon != null)
-                    {
-                        Debug.Log("weapon found");
                         blackboard.SetVariable(VariableNames.TARGET_WEAPON, weapon);
-                    }
                 }),
                 new BTGenericAction(() => { blackboard.SetVariable(VariableNames.TARGET_POSITION, blackboard.GetVariable<GameObject>(VariableNames.TARGET_WEAPON).transform.position); }),
+                new BTGenericAction(() => { stateText.SetText("Getting Weapon"); }),
                 new BTMoveToPosition(agent, moveSpeed, VariableNames.TARGET_POSITION, moveDistance),
                 new BTGenericAction(() => { blackboard.SetVariable(VariableNames.CURRENT_WEAPON, blackboard.GetVariable<GameObject>(VariableNames.TARGET_WEAPON)); })
                 );
 
-        // return weapon if no player in sight
+        // Return weapon if no player is targeted
         var ReturnWeaponTree =
             new BTSequence(
                 new BTCondition(() => { return blackboard.GetVariable<GameObject>(VariableNames.CURRENT_WEAPON) != null; }),
-                new BTGenericAction(() =>
-                {
-                    blackboard.SetVariable(VariableNames.TARGET_POSITION, blackboard.GetVariable<GameObject>(VariableNames.TARGET_WEAPON).transform.position);
-                    Debug.Log("returning weapon to storage");
-                }),
+                new BTGenericAction(() => { blackboard.SetVariable(VariableNames.TARGET_POSITION, blackboard.GetVariable<GameObject>(VariableNames.TARGET_WEAPON).transform.position); }),
+                new BTGenericAction(() => { stateText.SetText("returning weapon to storage"); }),
+                new BTGenericAction(() => { animator.CrossFade("Walk", 0.1f, 0); }),
                 new BTMoveToPosition(agent, moveSpeed, VariableNames.TARGET_POSITION, moveDistance),
                 new BTGenericAction(() => { blackboard.SetVariable<GameObject>(VariableNames.CURRENT_WEAPON, null); })
                 );
@@ -131,6 +126,7 @@ public class Guard : MonoBehaviour
                     new BTAlwaysTrue(ReturnWeaponTree),
                     new BTGenericAction(() => { animator.CrossFade("Walk", 0.1f, 0); }),
                     new BTGetNextPatrolPosition(wayPoints),
+                    new BTGenericAction(() => { stateText.SetText("moving to next waypoint"); }),
                     new BTRotateToPosition(transform, rotationSpeed, VariableNames.TARGET_POSITION, 5f),
                     new BTMoveToPosition(agent, moveSpeed, VariableNames.TARGET_POSITION, moveDistance),
                     new BTGenericAction(() => { animator.CrossFade("Idle", 0.2f, 0); }),
@@ -138,29 +134,38 @@ public class Guard : MonoBehaviour
                    )
             );
 
-        // attack sequence 
-        var AttackTree =    // guard also goes down this tree when playe no longer in sight. Probs cause targer_position isnt getting reset. 
-            new BTSequence( // Need to refactor that target_position(old player location) is same as curr player location.
-                new BTCondition(() => { return CheckIfPlayerAlive(); }),
-                new BTGenericAction(() => { animator.CrossFade("Kick", 0.5f, 0); }),
+        // Attack sequence, check if player is alive and in range then attack
+        var AttackTree =
+            new BTSequence(
+                new BTCondition(() => { return CheckIfPlayerAlive(); }), // Check if player isnt null
+                new BTGenericAction(() => { blackboard.SetVariable(VariableNames.PLAYER_TRANSFORM, blackboard.GetVariable<GameObject>(VariableNames.PLAYER).transform); }), // Reset player transform
+                new BTCondition(() =>
+                {
+                    return CheckIfPLayerIsTarget(
+                        blackboard.GetVariable<Vector3>(VariableNames.TARGET_POSITION),
+                        blackboard.GetVariable<Transform>(VariableNames.PLAYER_TRANSFORM).position);
+                }),
+                new BTGenericAction(() => { stateText.SetText("attacking player"); }),
+                new BTGenericAction(() => { animator.CrossFade("Kick", 0.3f, 0); }),
                 new BTWait(0.5f),
                 new BTGenericAction(() => { blackboard.SetVariable(VariableNames.TARGET_POSITION, blackboard.GetVariable<GameObject>(VariableNames.TARGET).transform.position); }),
                 new BTCondition(() => { return (Vector3.Distance(transform.position, blackboard.GetVariable<Vector3>(VariableNames.TARGET_POSITION)) <= attackDistance); }),
                 new BTGenericAction(() => { blackboard.GetVariable<GameObject>(VariableNames.TARGET).GetComponent<Player>().TakeDamage(this.gameObject, attackDamage); }),
-                new BTGenericAction(() => { animator.CrossFade("Idle", 0.2f, 0); }),
+                new BTGenericAction(() => { animator.CrossFade("Idle", 0.4f, 0); }),
                 new BTWait(1f)
                 );
 
-        // Find Weapon, check line of Sight and move to target
+        // Get Weapon, check line of Sight and move to target
         var ChaseTree =
             new BTSequence(
                 new BTCondition<GameObject>((x) => { return CheckLineOfSightToTarget(x); }, blackboard.GetVariable<GameObject>(VariableNames.TARGET)),
                 new BTAlwaysTrue(FindWeaponTree), // Reuse an existing tree but make it optional using the decorator
                 new BTGenericAction(() => { blackboard.SetVariable(VariableNames.TARGET_POSITION, blackboard.GetVariable<GameObject>(VariableNames.TARGET).transform.position); }),
                 new BTGenericAction(() => { animator.CrossFade("Walk", 0.2f, 0); }),
+                new BTGenericAction(() => { stateText.SetText("chasing player"); }),
                 new BTMoveToPosition(agent, moveSpeed, VariableNames.TARGET_POSITION, attackDistance),
                 new BTCondition(() => { return (Vector3.Distance(transform.position, blackboard.GetVariable<Vector3>(VariableNames.TARGET_POSITION)) <= attackDistance); }),
-                new BTAlwaysTrue(AttackTree)
+                AttackTree
                 );
 
 
@@ -172,6 +177,7 @@ public class Guard : MonoBehaviour
 
     private void FixedUpdate()
     {
+        InsideSmoke();
         TaskStatus result = tree.Tick();
     }
 
@@ -181,18 +187,34 @@ public class Guard : MonoBehaviour
 
         if (Physics.Raycast(eyePosition, target.transform.position - eyePosition, out RaycastHit hit, sightRange))
         {
-            return hit.collider.gameObject == target;
+            if (hit.collider.gameObject.tag == "Player") { return hit.collider.gameObject == target; }
+            else { return false; }
         }
-        else return false;
+        else { return false; }
+    }
+    public bool CheckIfPLayerIsTarget(Vector3 targetPos, Vector3 playerPos)
+    {
+        if (targetPos == playerPos) { return true; }
+        else { return false; }
     }
 
     public bool CheckIfPlayerAlive()
     {
-        GameObject player = FindAnyObjectByType<Player>().gameObject;
+        if (FindAnyObjectByType<Player>().gameObject.activeSelf) { return true; }
+        else { return false; }
+    }
 
-        if (player != null)
-            return true;
-        else return false;
+    public void InsideSmoke()
+    {
+        List<SmokeGrenade> grenades = FindObjectsOfType<SmokeGrenade>().ToList();
+        grenades.OrderBy(x => Vector3.Distance(x.transform.position, transform.position));
+        if (grenades.Count > 0)
+        {
+            if (Vector3.Distance(grenades.First().transform.position, transform.position) < grenades.First().smokeRadius) { sightRange = minSightRange; }
+            else { sightRange = maxSightRange; }
+            grenades.Clear();
+        }
+        else { sightRange = maxSightRange; }
     }
 
     //private void OnDrawGizmos()

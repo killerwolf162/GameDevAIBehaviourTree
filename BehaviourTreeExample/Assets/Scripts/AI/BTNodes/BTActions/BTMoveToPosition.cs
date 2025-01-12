@@ -21,7 +21,6 @@ public class BTMoveToPosition : BTBaseNode
 
     protected override void OnEnter()
     {
-        Debug.Log("Started moveToLocation");
         agent.speed = moveSpeed;
         agent.stoppingDistance = keepDistance;
         targetPosition = blackboard.GetVariable<Vector3>(BBtargetPosition);
@@ -42,12 +41,10 @@ public class BTMoveToPosition : BTBaseNode
         {
             return TaskStatus.Success;
         }
-        Debug.Log("moveToLocation Running");
         return TaskStatus.Running;      
     }
     protected override void OnExit()
     {
-        Debug.Log("Exited moveToLocation");
     }
 }
 

@@ -14,7 +14,6 @@ public class BTWait : BTBaseNode
 
     protected override void OnEnter()
     {
-        Debug.Log("Started wait");
         currentWaitTime = maxWaitTime;
     }
 
@@ -26,10 +25,5 @@ public class BTWait : BTBaseNode
             if(currentWaitTime > 0) { return TaskStatus.Running; }
         }
         return TaskStatus.Success;
-    }
-
-    protected override void OnExit()
-    {
-        Debug.Log("Exited Wait");
     }
 }
