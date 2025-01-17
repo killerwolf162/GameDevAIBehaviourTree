@@ -7,6 +7,7 @@ using TMPro;
 
 public class Guard : MonoBehaviour
 {
+    
     [SerializeField] private float moveSpeed = 3;
     [SerializeField] private float moveDistance = 0.5f;
     [SerializeField] private float sightRange = 5;
@@ -16,8 +17,9 @@ public class Guard : MonoBehaviour
     [SerializeField] private float rotationSpeed = 180f;
     [SerializeField] private int attackDamage = 1;
     [SerializeField] private GameObject weapon;
-    [SerializeField] private TextMeshProUGUI stateText;
+
     public Transform[] wayPoints;
+    private TextMeshProUGUI stateText;
     private BTBaseNode tree;
     private NavMeshAgent agent;
     private Animator animator;
@@ -103,6 +105,7 @@ public class Guard : MonoBehaviour
                 }),
                 new BTGenericAction(() => { blackboard.SetVariable(VariableNames.TARGET_POSITION, blackboard.GetVariable<GameObject>(VariableNames.TARGET_WEAPON).transform.position); }),
                 new BTGenericAction(() => { stateText.SetText("Getting Weapon"); }),
+                new BTGenericAction(() => { animator.CrossFade("Walk", 0.1f, 0); }),
                 new BTMoveToPosition(agent, moveSpeed, VariableNames.TARGET_POSITION, moveDistance),
                 new BTGenericAction(() => { blackboard.SetVariable(VariableNames.CURRENT_WEAPON, blackboard.GetVariable<GameObject>(VariableNames.TARGET_WEAPON)); })
                 );
@@ -121,17 +124,18 @@ public class Guard : MonoBehaviour
 
         // Patrol, Wait then rotate towards new target and patrol again
         var PatrolTree =
-            new BTRepeater(wayPoints.Length, //Repeat for each patrol waypoint
-                new BTSequence(
-                    new BTAlwaysTrue(ReturnWeaponTree),
-                    new BTGenericAction(() => { animator.CrossFade("Walk", 0.1f, 0); }),
-                    new BTGetNextPatrolPosition(wayPoints),
-                    new BTGenericAction(() => { stateText.SetText("moving to next waypoint"); }),
-                    new BTRotateToPosition(transform, rotationSpeed, VariableNames.TARGET_POSITION, 5f),
-                    new BTMoveToPosition(agent, moveSpeed, VariableNames.TARGET_POSITION, moveDistance),
-                    new BTGenericAction(() => { animator.CrossFade("Idle", 0.2f, 0); }),
-                    new BTWait(1f)
-                   )
+            new BTSequence(
+                new BTAlwaysTrue(ReturnWeaponTree),
+                new BTRepeater(wayPoints.Length, //Repeat for each patrol waypoint
+                    new BTSequence(
+                        new BTGenericAction(() => { animator.CrossFade("Walk", 0.1f, 0); }),
+                        new BTGetNextPatrolPosition(wayPoints),
+                        new BTGenericAction(() => { stateText.SetText("moving to next waypoint"); }),
+                        new BTRotateToPosition(transform, rotationSpeed, VariableNames.TARGET_POSITION, 5f),
+                        new BTMoveToPosition(agent, moveSpeed, VariableNames.TARGET_POSITION, moveDistance),
+                        new BTGenericAction(() => { animator.CrossFade("Idle", 0.2f, 0); }),
+                        new BTWait(1f)
+                    ))
             );
 
         // Attack sequence, check if player is alive and in range then attack
@@ -147,12 +151,11 @@ public class Guard : MonoBehaviour
                 }),
                 new BTGenericAction(() => { stateText.SetText("attacking player"); }),
                 new BTGenericAction(() => { animator.CrossFade("Kick", 0.3f, 0); }),
-                new BTWait(0.5f),
+                new BTWait(0.3f),
                 new BTGenericAction(() => { blackboard.SetVariable(VariableNames.TARGET_POSITION, blackboard.GetVariable<GameObject>(VariableNames.TARGET).transform.position); }),
                 new BTCondition(() => { return (Vector3.Distance(transform.position, blackboard.GetVariable<Vector3>(VariableNames.TARGET_POSITION)) <= attackDistance); }),
                 new BTGenericAction(() => { blackboard.GetVariable<GameObject>(VariableNames.TARGET).GetComponent<Player>().TakeDamage(this.gameObject, attackDamage); }),
-                new BTGenericAction(() => { animator.CrossFade("Idle", 0.4f, 0); }),
-                new BTWait(1f)
+                new BTGenericAction(() => { animator.CrossFade("Idle", 0.4f, 0); })
                 );
 
         // Get Weapon, check line of Sight and move to target
@@ -165,6 +168,7 @@ public class Guard : MonoBehaviour
                 new BTGenericAction(() => { stateText.SetText("chasing player"); }),
                 new BTMoveToPosition(agent, moveSpeed, VariableNames.TARGET_POSITION, attackDistance),
                 new BTCondition(() => { return (Vector3.Distance(transform.position, blackboard.GetVariable<Vector3>(VariableNames.TARGET_POSITION)) <= attackDistance); }),
+                new BTCondition(() => { return CheckIfPlayerAlive(); }),
                 AttackTree
                 );
 
@@ -181,20 +185,20 @@ public class Guard : MonoBehaviour
         TaskStatus result = tree.Tick();
     }
 
-    public bool CheckLineOfSightToTarget(GameObject target)
+    public bool CheckLineOfSightToTarget(GameObject _target)
     {
         Vector3 eyePosition = transform.position + new Vector3(0, 1.8f, 0);
 
-        if (Physics.Raycast(eyePosition, target.transform.position - eyePosition, out RaycastHit hit, sightRange))
+        if (Physics.Raycast(eyePosition, _target.transform.position - eyePosition, out RaycastHit hit, sightRange))
         {
-            if (hit.collider.gameObject.tag == "Player") { return hit.collider.gameObject == target; }
+            if (hit.collider.gameObject.tag == "Player") { return hit.collider.gameObject == _target; }
             else { return false; }
         }
         else { return false; }
     }
-    public bool CheckIfPLayerIsTarget(Vector3 targetPos, Vector3 playerPos)
+    public bool CheckIfPLayerIsTarget(Vector3 _targetPos, Vector3 _playerPos)
     {
-        if (targetPos == playerPos) { return true; }
+        if (_targetPos == _playerPos) { return true; }
         else { return false; }
     }
 
@@ -216,26 +220,4 @@ public class Guard : MonoBehaviour
         }
         else { sightRange = maxSightRange; }
     }
-
-    //private void OnDrawGizmos()
-    //{
-    //    Gizmos.color = Color.red;
-
-    //    //Check if there has been a hit yet
-    //    if (hitDetected)
-    //    {
-    //        //Draw a Ray forward from GameObject toward the hit
-    //        Gizmos.DrawRay(transform.position, transform.forward * hit.distance);
-    //        //Draw a cube that extends to where the hit exists
-    //        Gizmos.DrawWireCube(transform.position + transform.forward * hit.distance, transform.localScale);
-    //    }
-    //    //If there hasn't been a hit yet, draw the ray at the maximum distance
-    //    else
-    //    {
-    //        //Draw a Ray forward from GameObject toward the maximum distance
-    //        Gizmos.DrawRay(transform.position, transform.forward * attackDistance);
-    //        //Draw a cube at the maximum distance
-    //        Gizmos.DrawWireCube(transform.position + transform.forward * attackDistance, transform.localScale);
-    //    }
-    //}
 }

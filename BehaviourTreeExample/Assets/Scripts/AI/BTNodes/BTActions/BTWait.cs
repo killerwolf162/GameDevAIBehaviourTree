@@ -7,9 +7,9 @@ public class BTWait : BTBaseNode
     protected float maxWaitTime = 0;
     protected float currentWaitTime = 0;
     
-    public BTWait(float seconds)
+    public BTWait(float _seconds)
     {
-        maxWaitTime = seconds;
+        maxWaitTime = _seconds;
     }
 
     protected override void OnEnter()

@@ -4,10 +4,14 @@ using UnityEngine;
 
 public class ThirdPersonCamera : MonoBehaviour
 {
-    [SerializeField] private float rotXSpeed = 30f;
-    [SerializeField] private float rotYSpeed = 30f;
-    [SerializeField] private Transform followTarget;
-    [SerializeField] private float smoothFollowFactor = 4f;
+    [SerializeField] 
+    private float rotXSpeed = 30f;
+    [SerializeField] 
+    private float rotYSpeed = 30f;
+    [SerializeField] 
+    private Transform followTarget;
+    [SerializeField] 
+    private float smoothFollowFactor = 4f;
 
     private float angleX = 0;
     private float angleY = 0;

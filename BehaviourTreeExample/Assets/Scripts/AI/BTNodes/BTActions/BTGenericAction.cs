@@ -2,9 +2,9 @@
 {
     protected System.Action action;
 
-    public BTGenericAction(System.Action action)
+    public BTGenericAction(System.Action _action)
     {
-        this.action = action;
+        this.action = _action;
     }
 
     protected override TaskStatus OnUpdate()

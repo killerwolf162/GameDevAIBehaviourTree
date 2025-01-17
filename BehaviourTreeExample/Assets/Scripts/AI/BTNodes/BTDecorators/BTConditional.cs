@@ -6,9 +6,9 @@ using UnityEngine;
 public class BTCondition : BTBaseNode
 {
     protected Func<bool> condition;
-    public BTCondition(System.Func<bool> condition)
+    public BTCondition(System.Func<bool> _condition)
     {
-        this.condition = condition;
+        this.condition = _condition;
     }
 
     public virtual bool Evaluate() { return condition.Invoke(); }

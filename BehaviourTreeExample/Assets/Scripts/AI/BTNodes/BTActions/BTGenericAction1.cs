@@ -3,10 +3,10 @@
     protected System.Action<T> action;
     protected T target;
 
-    public BTGenericAction(System.Action<T> action, T target)
+    public BTGenericAction(System.Action<T> _action, T _target)
     {
-        this.action = action;
-        this.target = target;
+        this.action = _action;
+        this.target = _target;
     }
 
     protected override TaskStatus OnUpdate()

@@ -3,9 +3,9 @@
 public class BTGetNextPatrolPosition : BTBaseNode
 {
     private Transform[] wayPoints;
-    public BTGetNextPatrolPosition(Transform[] wayPoints)
+    public BTGetNextPatrolPosition(Transform[] _wayPoints)
     {
-        this.wayPoints = wayPoints;
+        this.wayPoints = _wayPoints;
     }
 
     protected override void OnEnter()

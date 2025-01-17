@@ -1,6 +1,6 @@
 ﻿public class BTAlwaysTrue : BTDecorator
 {
-    public BTAlwaysTrue(BTBaseNode child) : base(child)
+    public BTAlwaysTrue(BTBaseNode _child) : base(_child)
     {
     }
 

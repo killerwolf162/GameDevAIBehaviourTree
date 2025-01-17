@@ -4,11 +4,16 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    [SerializeField] 
+    private float rotationSpeed = 180f;
+    [SerializeField] 
+    private float moveSpeed = 3;
+    [SerializeField] 
+    private float deathForce = 1000;
+    [SerializeField] 
+    private GameObject ragdoll;
+
     public Transform Camera;
-    [SerializeField] private float rotationSpeed = 180f;
-    [SerializeField] private float moveSpeed = 3;
-    [SerializeField] private float deathForce = 1000;
-    [SerializeField] private GameObject ragdoll;
     private Rigidbody rb;
     private Animator animator;
     private float vert = 0;
@@ -61,7 +66,7 @@ public class Player : MonoBehaviour
         
     }
 
-    public void TakeDamage(GameObject attacker, int damage)
+    public void TakeDamage(GameObject _attacker, int _damage)
     {
         animator.enabled = false;
         var cols = GetComponentsInChildren<Collider>();
@@ -76,32 +81,32 @@ public class Player : MonoBehaviour
         {
             rib.isKinematic = false;
             rib.useGravity = true;
-            rib.AddForce(Vector3.Scale(new Vector3(1,0.5f,1),(transform.position - attacker.transform.position).normalized * deathForce));
+            rib.AddForce(Vector3.Scale(new Vector3(1,0.5f,1),(transform.position - _attacker.transform.position).normalized * deathForce));
         }
         ragdoll.transform.SetParent(null);
 
         gameObject.SetActive(false);
     }
 
-    private void GetComponentsRecursively<T>(GameObject obj, ref List<T> components)
+    private void GetComponentsRecursively<T>(GameObject _obj, ref List<T> _components)
     {
-        T component = obj.GetComponent<T>();
+        T component = _obj.GetComponent<T>();
         if(component != null)
         {
-            components.Add(component);
+            _components.Add(component);
         }
-        foreach(Transform t in obj.transform)
+        foreach(Transform t in _obj.transform)
         {
-            if(t.gameObject == obj) { continue; }
-            GetComponentsRecursively<T>(t.gameObject, ref components);
+            if(t.gameObject == _obj) { continue; }
+            GetComponentsRecursively<T>(t.gameObject, ref _components);
         }
     }
 
-    private void ChangeAnimation(string animationName, float fadeTime)
+    private void ChangeAnimation(string _animationName, float _fadeTime)
     {
-        if (!animator.GetCurrentAnimatorStateInfo(0).IsName(animationName) && !animator.IsInTransition(0))
+        if (!animator.GetCurrentAnimatorStateInfo(0).IsName(_animationName) && !animator.IsInTransition(0))
         {
-            animator.CrossFade(animationName, fadeTime);
+            animator.CrossFade(_animationName, _fadeTime);
         }
     }
 }

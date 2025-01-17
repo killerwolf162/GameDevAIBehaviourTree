@@ -29,9 +29,9 @@ public abstract class BTBaseNode
         return result;
     }
 
-    public virtual void SetupBlackboard(Blackboard blackboard)
+    public virtual void SetupBlackboard(Blackboard _blackboard)
     {
-        this.blackboard = blackboard;
+        this.blackboard = _blackboard;
     }
 
     //Protected Methods
@@ -48,12 +48,12 @@ public abstract class BTComposite : BTBaseNode
         this.children = children;
     }
 
-    public override void SetupBlackboard(Blackboard blackboard)
+    public override void SetupBlackboard(Blackboard _blackboard)
     {
-        base.SetupBlackboard(blackboard);
+        base.SetupBlackboard(_blackboard);
         foreach(BTBaseNode node in children)
         {
-            node.SetupBlackboard(blackboard);
+            node.SetupBlackboard(_blackboard);
         }
     }
 }
@@ -66,9 +66,9 @@ public abstract class BTDecorator : BTBaseNode
         this.child = child;
     }
 
-    public override void SetupBlackboard(Blackboard blackboard)
+    public override void SetupBlackboard(Blackboard _blackboard)
     {
-        base.SetupBlackboard(blackboard);
-        child.SetupBlackboard(blackboard);
+        base.SetupBlackboard(_blackboard);
+        child.SetupBlackboard(_blackboard);
     }
 }

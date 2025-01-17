@@ -5,7 +5,8 @@ using UnityEngine;
 public class RotateStateText : MonoBehaviour
 {
 
-    [SerializeField] private Transform target;
+    [SerializeField] 
+    private Transform target;
     private Transform self;
     private float angleError = 1f; //in Degrees
     private float rotationSpeed = 180f;

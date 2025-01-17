@@ -11,12 +11,12 @@ public class BTMoveToPosition : BTBaseNode
     private Vector3 targetPosition;
     private string BBtargetPosition;
 
-    public BTMoveToPosition(NavMeshAgent agent, float moveSpeed, string BBtargetPosition, float keepDistance)
+    public BTMoveToPosition(NavMeshAgent _agent, float _moveSpeed, string _BBtargetPosition, float _keepDistance)
     {
-        this.agent = agent;
-        this.moveSpeed = moveSpeed;
-        this.BBtargetPosition = BBtargetPosition;
-        this.keepDistance = keepDistance;
+        this.agent = _agent;
+        this.moveSpeed = _moveSpeed;
+        this.BBtargetPosition = _BBtargetPosition;
+        this.keepDistance = _keepDistance;
     }
 
     protected override void OnEnter()

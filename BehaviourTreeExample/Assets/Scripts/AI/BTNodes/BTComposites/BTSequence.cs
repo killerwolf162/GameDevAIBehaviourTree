@@ -9,7 +9,7 @@ public class BTSequence : BTComposite
 {
     private int currentIndex = 0;
 
-    public BTSequence(params BTBaseNode[] children) : base(children) { }
+    public BTSequence(params BTBaseNode[] _children) : base(_children) { }
 
     protected override TaskStatus OnUpdate()
     {

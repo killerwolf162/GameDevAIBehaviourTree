@@ -4,8 +4,11 @@ using UnityEngine;
 
 public class SmokeGrenade : MonoBehaviour
 {
-    [SerializeField] float smokeTimer = 10f;
-    [SerializeField] ParticleSystem partSystem;
+    [SerializeField] 
+    private float smokeTimer = 10f;
+    [SerializeField] 
+    ParticleSystem partSystem;
+
     public float smokeRadius = 5;
     private float counter;
 

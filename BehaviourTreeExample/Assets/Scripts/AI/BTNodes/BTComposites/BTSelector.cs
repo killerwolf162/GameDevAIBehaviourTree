@@ -7,7 +7,7 @@ using UnityEngine;
 ///
 public class BTSelector : BTComposite
 {
-    public BTSelector(params BTBaseNode[] children) : base(children) { }
+    public BTSelector(params BTBaseNode[] _children) : base(_children) { }
 
     protected override TaskStatus OnUpdate()
     {

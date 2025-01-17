@@ -8,12 +8,12 @@ public class BTRotateToPosition : BTBaseNode
     private Transform self;
     private float angleError = 1f; //in Degrees
 
-    public BTRotateToPosition(Transform self, float rotationSpeed, string BBtargetPosition, float angleError)
+    public BTRotateToPosition(Transform _self, float _rotationSpeed, string _BBtargetPosition, float _angleError)
     {        
-        this.self = self;
-        this.rotationSpeed = rotationSpeed;
-        this.BBtargetPosition = BBtargetPosition;            
-        this.angleError = angleError;
+        this.self = _self;
+        this.rotationSpeed = _rotationSpeed;
+        this.BBtargetPosition = _BBtargetPosition;            
+        this.angleError = _angleError;
     }
 
     protected override void OnEnter()

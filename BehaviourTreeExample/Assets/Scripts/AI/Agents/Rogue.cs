@@ -14,8 +14,8 @@ public class Rogue : MonoBehaviour
     [SerializeField] private float currSmokeCooldown = 0f;
     [SerializeField] private GameObject smokeGrenade;
     [SerializeField] private TextMeshProUGUI stateText;
-    public Transform[] wayPoints;
 
+    public Transform[] wayPoints;
     private BTBaseNode tree;
     private NavMeshAgent agent;
     private Animator animator;
