@@ -1752,11 +1752,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fee611217e4db0f41a25a491885efab5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Camera: {fileID: 1696898269}
   rotationSpeed: 360
   moveSpeed: 3
   deathForce: 1500
   ragdoll: {fileID: 1392164572}
+  Camera: {fileID: 1696898269}
 --- !u!136 &1267729047
 CapsuleCollider:
   m_ObjectHideFlags: 0

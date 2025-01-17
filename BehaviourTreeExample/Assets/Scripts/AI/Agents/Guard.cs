@@ -17,9 +17,9 @@ public class Guard : MonoBehaviour
     [SerializeField] private float rotationSpeed = 180f;
     [SerializeField] private int attackDamage = 1;
     [SerializeField] private GameObject weapon;
+    [SerializeField] private TextMeshProUGUI stateText;
 
     public Transform[] wayPoints;
-    private TextMeshProUGUI stateText;
     private BTBaseNode tree;
     private NavMeshAgent agent;
     private Animator animator;
@@ -124,10 +124,10 @@ public class Guard : MonoBehaviour
 
         // Patrol, Wait then rotate towards new target and patrol again
         var PatrolTree =
-            new BTSequence(
-                new BTAlwaysTrue(ReturnWeaponTree),
+            new BTSequence( 
                 new BTRepeater(wayPoints.Length, //Repeat for each patrol waypoint
                     new BTSequence(
+                        new BTAlwaysTrue(ReturnWeaponTree),
                         new BTGenericAction(() => { animator.CrossFade("Walk", 0.1f, 0); }),
                         new BTGetNextPatrolPosition(wayPoints),
                         new BTGenericAction(() => { stateText.SetText("moving to next waypoint"); }),
